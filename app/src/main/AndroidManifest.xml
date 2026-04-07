@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jef4tech.interviewalarm">
+
+    <!-- Permissions for Alarms & Notifications -->
+    <!-- Required to schedule alarms accurately to exact moments (e.g., 30 minds before interview) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    
+    <!-- Required to show the local heads-up notifications (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    
+    <!-- Required to re-read database when the device turns back on so alarms aren't lost -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:name=".InterviewAlarmApp"
+        android:allowBackup="true"
+        android:label="InterviewAlarm"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.InterviewAlarm">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="InterviewAlarm"
+            android:theme="@style/Theme.InterviewAlarm">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Our standard Alarm Notification trigger -->
+        <receiver android:name=".receiver.AlarmReceiver" android:exported="false" />
+        
+        <!-- Our listener ensuring job reminders survive physical device reboots safely -->
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+</manifest>
