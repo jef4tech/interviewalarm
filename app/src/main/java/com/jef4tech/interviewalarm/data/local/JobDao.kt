@@ -9,8 +9,7 @@ interface JobDao {
     @Query("SELECT * FROM jobs ORDER BY interviewDateTime ASC")
     fun getAllJobs(): Flow<List<JobEntity>>
 
-    @Query("SELECT * FROM jobs WHERE status = 'INTERVIEWING' ORDER BY interviewDateTime ASC")
-    fun getUpcomingInterviews(): Flow<List<JobEntity>>
+
 
     @Query("SELECT * FROM jobs WHERE id = :id")
     suspend fun getJobById(id: String): JobEntity?

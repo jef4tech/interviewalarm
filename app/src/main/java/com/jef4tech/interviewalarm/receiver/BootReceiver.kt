@@ -27,7 +27,7 @@ class BootReceiver : BroadcastReceiver() {
             
             // Leveraging IO dispatcher so we don't block the main thread directly
             CoroutineScope(Dispatchers.IO).launch {
-                val upcomingJobs = jobRepository.getUpcomingInterviews().firstOrNull()
+                val upcomingJobs = jobRepository.getAllJobs().firstOrNull()
                 
                 upcomingJobs?.forEach { job ->
                     // Re-register alarms securely

@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 interface JobRepository {
     fun getAllJobs(): Flow<List<Job>>
-    fun getUpcomingInterviews(): Flow<List<Job>>
+
     suspend fun getJobById(id: String): Job?
     suspend fun insertJob(job: Job)
     suspend fun updateJob(job: Job)

@@ -112,9 +112,9 @@ fun InterviewDashboard(
             val nextInterview = jobs.firstOrNull { it.status == JobStatus.INTERVIEWING }
                 ?: jobs.firstOrNull()
 
-            val appliedCount = 24 // Can be calculated from all jobs if we have access
-            val interviewsCount = 8
-            val offersCount = 2
+            val appliedCount = uiState.appliedCount
+            val interviewsCount = uiState.interviewsCount
+            val offersCount = uiState.offersCount
 
             LazyColumn(
                 modifier = Modifier

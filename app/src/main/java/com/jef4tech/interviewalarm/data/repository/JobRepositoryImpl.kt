@@ -23,20 +23,7 @@ class JobRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getUpcomingInterviews(): Flow<List<Job>> {
-        // Debug: also log total jobs in DB directly
-        GlobalScope.launch {
-            try {
-                val allJobs = dao.getAllJobs().firstOrNull()
-            } catch (e: Exception) {
-                Log.e("InterviewDebugDB", "Error getting all jobs", e)
-            }
-        }
 
-        return dao.getUpcomingInterviews().map { entities ->
-            entities.map { it.toDomain() } 
-        }
-    }
 
     override suspend fun getJobById(id: String): Job? {
         return dao.getJobById(id)?.toDomain()

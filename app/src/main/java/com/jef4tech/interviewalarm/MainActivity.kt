@@ -53,12 +53,16 @@ class MainActivity : ComponentActivity() {
                                 NavigationBarItem(
                                     icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
                                     label = { Text("Home") },
-                                    selected = currentRoute == "job_list",
+                                    selected = currentRoute == "job_list" || currentRoute?.startsWith("job_detail") == true,
                                     onClick = { 
-                                        navController.navigate("job_list") {
-                                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                            launchSingleTop = true
-                                            restoreState = true
+                                        if (currentRoute == "job_list" || currentRoute?.startsWith("job_detail") == true) {
+                                            navController.popBackStack("job_list", inclusive = false)
+                                        } else {
+                                            navController.navigate("job_list") {
+                                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
                                         }
                                     },
                                     colors = NavigationBarItemDefaults.colors(

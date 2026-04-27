@@ -3,7 +3,7 @@ package com.jef4tech.interviewalarm.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jef4tech.interviewalarm.domain.model.Job
-import com.jef4tech.interviewalarm.domain.usecase.GetUpcomingInterviewsUseCase
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,16 +14,21 @@ import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import com.jef4tech.interviewalarm.domain.usecase.SaveJobUseCase
+import com.jef4tech.interviewalarm.domain.usecase.GetAllJobsUseCase
+import com.jef4tech.interviewalarm.domain.model.JobStatus
 
 data class JobUiState(
     val isLoading: Boolean = false,
     val upcomingInterviews: List<Job> = emptyList(),
+    val appliedCount: Int = 0,
+    val interviewsCount: Int = 0,
+    val offersCount: Int = 0,
     val error: String? = null
 )
 
 @HiltViewModel
 class JobViewModel @Inject constructor(
-    private val getUpcomingInterviewsUseCase: GetUpcomingInterviewsUseCase,
+    private val getAllJobsUseCase: GetAllJobsUseCase,
     private val saveJobUseCase: SaveJobUseCase
 ) : ViewModel() {
 
@@ -31,24 +36,36 @@ class JobViewModel @Inject constructor(
     val uiState: StateFlow<JobUiState> = _uiState.asStateFlow()
 
     init {
-        fetchUpcomingInterviews()
+        fetchAllJobs()
     }
 
-    private fun fetchUpcomingInterviews() {
+    private fun fetchAllJobs() {
         viewModelScope.launch {
-            getUpcomingInterviewsUseCase()
+            getAllJobsUseCase()
                 .onStart {
-                    android.util.Log.d("InterviewDebugUI", "fetchUpcomingInterviews: Started")
+                    android.util.Log.d("InterviewDebugUI", "fetchAllJobs: Started")
                     _uiState.update { it.copy(isLoading = true) }
                 }
                 .catch { e ->
-                    android.util.Log.e("InterviewDebugUI", "fetchUpcomingInterviews error:", e)
+                    android.util.Log.e("InterviewDebugUI", "fetchAllJobs error:", e)
                     _uiState.update { it.copy(isLoading = false, error = e.message) }
                 }
                 .collect { jobs ->
-                    android.util.Log.d("InterviewDebugUI", "fetchUpcomingInterviews: Collected ${jobs.size} jobs to show in UI")
+                    val upcoming = jobs.filter { it.status == JobStatus.INTERVIEWING }
+                    val applied = jobs.count { it.status == JobStatus.APPLIED }
+                    val interviews = upcoming.size
+                    val offers = jobs.count { it.status == JobStatus.OFFERED }
+                    
+                    android.util.Log.d("InterviewDebugUI", "fetchAllJobs: Collected ${jobs.size} jobs total, ${upcoming.size} upcoming")
+                    
                     _uiState.update { 
-                        it.copy(isLoading = false, upcomingInterviews = jobs)
+                        it.copy(
+                            isLoading = false,
+                            upcomingInterviews = upcoming,
+                            appliedCount = applied,
+                            interviewsCount = interviews,
+                            offersCount = offers
+                        ) 
                     }
                 }
         }
